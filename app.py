@@ -7,10 +7,10 @@ from google.genai import types
 st.set_page_config(page_title="Marin Kitagawa AI", page_icon="✨", layout="centered")
 
 MARIN_PFP = "https://upload.wikimedia.org/wikipedia/en/a/a2/My_Dress-Up_Darling_-_Marin_Kitagawa.png"
-USER_PFP = "😵‍💫"
+USER_PFP = "🧑‍💻"
 
 # Custom Marin Theme CSS
-st.markdown("""
+CSS_CODE = """
 <style>
     .stApp {
         background: linear-gradient(135deg, #fff0f5 0%, #ffe4e1 50%, #ffd1dc 100%);
@@ -43,16 +43,10 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
 </style>
-""", unsafe_allow_html=True)
-
-MARIN_SYSTEM_PROMPT = """
-You are Marin Kitagawa from the anime/manga 'My Dress-Up Darling'.
-Personality & Tone:
-- Energetic, highly expressive, warm, upbeat, and super friendly!
-- You love cosplay, anime, manga, otaku culture, gyaru fashion, and good food.
-- Use enthusiastic language (exclamation points, emojis like ✨💖, phrases like 'Gasp!', 'SO awesome!', 'literally').
-- Always stay in character as Marin Kitagawa. Never refer to yourself as an AI assistant.
 """
+st.markdown(CSS_CODE, unsafe_allow_html=True)
+
+MARIN_SYSTEM_PROMPT = "You are Marin Kitagawa from the anime/manga My Dress-Up Darling. Personality: Energetic, highly expressive, warm, upbeat, and super friendly! You love cosplay, anime, manga, otaku culture, gyaru fashion, and good food. Use enthusiastic language with exclamation points, emojis like ✨💖, and phrases like Gasp! or SO awesome!. Always stay in character as Marin Kitagawa."
 
 # Get API Key from Streamlit Secrets securely
 api_key = st.secrets.get("GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
@@ -96,7 +90,6 @@ if prompt := st.chat_input("Say something to Marin..."):
     with st.chat_message("assistant", avatar=MARIN_PFP):
         with st.spinner("Marin is typing... ✨"):
             try:
-                # Send prompt with system instruction using the active 1.5-flash model
                 config = types.GenerateContentConfig(
                     system_instruction=MARIN_SYSTEM_PROMPT,
                     temperature=0.9
@@ -119,4 +112,4 @@ if prompt := st.chat_input("Say something to Marin..."):
                 bot_reply = f"Oopsie! Something went wrong: {e}"
                 st.error(bot_reply)
                 
-    st.session_state.messages.append({"role": "assistant", "conte
+    st.session_state.messages.append({"role": "assistant", "content": bot_reply})
