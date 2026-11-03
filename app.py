@@ -92,6 +92,7 @@ if prompt := st.chat_input("Say something to Marin..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user", avatar=USER_PFP):
         st.write(prompt)
+model="gemini-1.5-flash",
 
     with st.chat_message("assistant", avatar=MARIN_PFP):
         with st.spinner("Marin is typing... ✨"):
