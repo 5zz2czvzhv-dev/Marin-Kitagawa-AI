@@ -7,7 +7,7 @@ from google.genai import types
 st.set_page_config(page_title="Marin Kitagawa AI", page_icon="✨", layout="centered")
 
 MARIN_PFP = "https://upload.wikimedia.org/wikipedia/en/a/a2/My_Dress-Up_Darling_-_Marin_Kitagawa.png"
-USER_PFP = "🧑‍💻"
+USER_PFP = "😵‍💫"
 
 # Custom Marin Theme CSS
 st.markdown("""
@@ -92,19 +92,18 @@ if prompt := st.chat_input("Say something to Marin..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user", avatar=USER_PFP):
         st.write(prompt)
-model="gemini-1.5-flash",
 
     with st.chat_message("assistant", avatar=MARIN_PFP):
         with st.spinner("Marin is typing... ✨"):
             try:
-                # Send the single latest prompt with the system persona attached
+                # Send prompt with system instruction using the active 1.5-flash model
                 config = types.GenerateContentConfig(
                     system_instruction=MARIN_SYSTEM_PROMPT,
                     temperature=0.9
                 )
                 
                 response = client.models.generate_content(
-                    model="gemini-2.5-flash",
+                    model="gemini-1.5-flash",
                     contents=prompt,
                     config=config
                 )
@@ -120,4 +119,4 @@ model="gemini-1.5-flash",
                 bot_reply = f"Oopsie! Something went wrong: {e}"
                 st.error(bot_reply)
                 
-    st.session_state.messages.append({"role": "assistant", "content": bot_reply})
+    st.session_state.messages.append({"role": "assistant", "conte
