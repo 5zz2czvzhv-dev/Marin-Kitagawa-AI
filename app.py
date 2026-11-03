@@ -95,9 +95,8 @@ if prompt := st.chat_input("Say something to Marin..."):
                     temperature=0.9
                 )
                 
-                # Using the stable 'gemini-flash-latest' model alias
                 response = client.models.generate_content(
-                    model="gemini-flash-latest",
+                    model="gemini-2.5-flash",
                     contents=prompt,
                     config=config
                 )
@@ -105,12 +104,12 @@ if prompt := st.chat_input("Say something to Marin..."):
                 if response.text:
                     bot_reply = response.text
                 else:
-                    bot_reply = "Gasp! I didn't catch that. Say that again? ✨"
+                    bot_reply = "Gasp! My brain lagged for a second. Say that again? ✨"
                     
                 st.write(bot_reply)
                 
             except Exception as e:
-                bot_reply = f"Oopsie! Something went wrong: {e}"
+                bot_reply = f"Gasp! Something went wrong: {e}"
                 st.error(bot_reply)
                 
     st.session_state.messages.append({"role": "assistant", "content": bot_reply})
