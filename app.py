@@ -95,8 +95,9 @@ if prompt := st.chat_input("Say something to Marin..."):
                     temperature=0.9
                 )
                 
+                # Using the stable 'gemini-flash-latest' model alias
                 response = client.models.generate_content(
-                    model="gemini-1.5-flash",
+                    model="gemini-flash-latest",
                     contents=prompt,
                     config=config
                 )
