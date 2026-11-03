@@ -90,6 +90,15 @@ if prompt := st.chat_input("Say something to Marin..."):
     with st.chat_message("assistant", avatar=MARIN_PFP):
         with st.spinner("Marin is typing... ✨"):
             try:
+                # Format history for the API call
+                history_contents = []
+                for m in st.session_state.messages[:-1]:
+                    role = "user" if m["role"] == "user" else "model"
+                    history_contents.append({"role": role, "parts": [{"text": m["content"]}]})
+                
+                # Add current prompt
+                history_contents.append({"role": "user", "parts": [{"text": prompt}]})
+
                 config = types.GenerateContentConfig(
                     system_instruction=MARIN_SYSTEM_PROMPT,
                     temperature=0.9
@@ -97,11 +106,11 @@ if prompt := st.chat_input("Say something to Marin..."):
                 
                 response = client.models.generate_content(
                     model="gemini-2.5-flash",
-                    contents=prompt,
+                    contents=history_contents,
                     config=config
                 )
                 
-                if response.text:
+                if response and response.text:
                     bot_reply = response.text
                 else:
                     bot_reply = "Gasp! My brain lagged for a second. Say that again? ✨"
