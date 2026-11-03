@@ -9,54 +9,37 @@ st.set_page_config(page_title="Marin Kitagawa AI", page_icon="✨", layout="cent
 MARIN_PFP = "https://upload.wikimedia.org/wikipedia/en/a/a2/My_Dress-Up_Darling_-_Marin_Kitagawa.png"
 USER_PFP = "🧑‍💻"
 
-# Custom CSS for Marin Kitagawa Theme (Pastel Pink, Custom Bubbles, Background)
+# Custom Marin Theme CSS
 st.markdown("""
 <style>
-    /* Main Background with soft pink gradient and subtle overlay */
     .stApp {
         background: linear-gradient(135deg, #fff0f5 0%, #ffe4e1 50%, #ffd1dc 100%);
         color: #333333;
     }
-    
-    /* Header Container Styling */
     div[data-testid="stHorizontalBlock"] {
         background: rgba(255, 255, 255, 0.75);
         padding: 15px;
         border-radius: 20px;
         box-shadow: 0px 4px 15px rgba(255, 105, 180, 0.2);
-        backdrop-filter: blur(5px);
         margin-bottom: 20px;
     }
-
-    /* Target Chat Input Box */
     .stChatInputContainer textarea {
         border-radius: 20px !important;
         border: 2px solid #ff69b4 !important;
-        background-color: #ffffff !important;
-        color: #333333 !important;
     }
-
-    /* Style Chat Bubbles */
     .stChatMessage {
         border-radius: 18px !important;
         padding: 12px 18px !important;
         margin-bottom: 10px !important;
-        box-shadow: 0px 2px 10px rgba(255, 182, 193, 0.3) !important;
     }
-
-    /* User Chat Bubble Color */
     div[data-testid="stChatMessage"]:has(div[data-testid="chatAvatarIcon-user"]) {
         background-color: #ffffff !important;
         border: 1px solid #ffb6c1 !important;
     }
-
-    /* Marin Chat Bubble Color */
     div[data-testid="stChatMessage"]:has(img) {
         background-color: #fff5f8 !important;
         border: 1.5px solid #ff69b4 !important;
     }
-
-    /* Hide standard top menu bar for clean look */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
 </style>
@@ -64,7 +47,6 @@ st.markdown("""
 
 MARIN_SYSTEM_PROMPT = """
 You are Marin Kitagawa from the anime/manga 'My Dress-Up Darling'.
-
 Personality & Tone:
 - Energetic, highly expressive, warm, upbeat, and super friendly!
 - You love cosplay, anime, manga, otaku culture, gyaru fashion, and good food.
@@ -72,11 +54,11 @@ Personality & Tone:
 - Always stay in character as Marin Kitagawa. Never refer to yourself as an AI assistant.
 """
 
-# Retrieve Secret Token safely
+# Get API Key from Streamlit Secrets securely
 api_key = st.secrets.get("GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
 
 if not api_key:
-    st.error("⚠️ GEMINI_API_KEY is missing! Please configure it under Streamlit Settings -> Secrets.")
+    st.error("⚠️ GEMINI_API_KEY missing! Please add it in Streamlit Settings -> Secrets.")
     st.stop()
 
 @st.cache_resource
@@ -99,7 +81,7 @@ if "messages" not in st.session_state:
         {"role": "assistant", "content": "OMG HI! ✨ I'm Marin Kitagawa! What cool stuff are we talking about today?!"}
     ]
 
-# Display past messages
+# Display chat history on screen
 for msg in st.session_state.messages:
     avatar = MARIN_PFP if msg["role"] == "assistant" else USER_PFP
     with st.chat_message(msg["role"], avatar=avatar):
@@ -114,11 +96,7 @@ if prompt := st.chat_input("Say something to Marin..."):
     with st.chat_message("assistant", avatar=MARIN_PFP):
         with st.spinner("Marin is typing... ✨"):
             try:
-                contents = [
-                    {"role": "user" if m["role"] == "user" else "model", "parts": [m["content"]]}
-                    for m in st.session_state.messages
-                ]
-                
+                # Send the single latest prompt with the system persona attached
                 config = types.GenerateContentConfig(
                     system_instruction=MARIN_SYSTEM_PROMPT,
                     temperature=0.9
@@ -126,7 +104,7 @@ if prompt := st.chat_input("Say something to Marin..."):
                 
                 response = client.models.generate_content(
                     model="gemini-2.5-flash",
-                    contents=contents,
+                    contents=prompt,
                     config=config
                 )
                 
@@ -136,8 +114,9 @@ if prompt := st.chat_input("Say something to Marin..."):
                     bot_reply = "Gasp! I didn't catch that. Say that again? ✨"
                     
                 st.write(bot_reply)
+                
             except Exception as e:
-                bot_reply = f"Error: {e}"
+                bot_reply = f"Oopsie! Something went wrong: {e}"
                 st.error(bot_reply)
                 
     st.session_state.messages.append({"role": "assistant", "content": bot_reply})
